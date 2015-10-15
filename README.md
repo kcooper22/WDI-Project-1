@@ -1,10 +1,10 @@
 --- Blackjack ---
 
 Steps required: 
-	0. Player places bet
+	<!-- 0. Player places bet -->
 	1. Build deck
 	2. Shuffle cards
-	3. Deal cards to deal, one face down
+	3. Deal cards to dealer, one face down
 	4. Deal card to player, both face up
 		a. If player has natural 21
 			1. if dealer has natural 21 -> push
