@@ -1,4 +1,6 @@
-// console.log('yo');
+window.onload = function()	{
+	playGame();
+}
 
 //global variables
 var playerImages = document.getElementById('player-hand');
@@ -7,13 +9,17 @@ var buttons = document.getElementById('player-buttons');
 var dealButton = document.getElementById('deal-button');
 var playerTotal = document.getElementById('player-total');
 var dealerTotal = document.getElementById('dealer-total');
+var hit = document.getElementById('hit-button');	
+var stay = document.getElementById('stay-button');
 var playercount = 0;
-var playerdealt = 0
+var playerdealt = 0;
 var dealercount = 0;
-var dealerdealt = 0
+var dealerdealt = 0;
+var playeraces = 0;
+var dealeraces = 0;
 var dealerHand = [];
 var playerHand = [];
-
+var myDeck = [];
 
 
 // function to create card object
@@ -44,75 +50,92 @@ function shuffle(deck) {
 		return deck;
 };
 
-//creates and shuffles a deck
-var myDeck = deck();
-
-shuffle(myDeck);
-
-console.log(myDeck);
-
 // function to deal inital hands to the dealer and player
 function dealCards(){
 	dealButton.onclick = function(){
+		//creates and shuffles a deck
+		myDeck = deck();
+
+		shuffle(myDeck);
+
+		playercount = 0;
+		playerdealt = 0;
+		dealercount = 0;
+		dealerdealt = 0;
+		playeraces = 0;
+		dealeraces = 0;
+		dealerHand = [];
+		playerHand = [];
+
+		dealerImages.innerHTML = "";
+
+		playerImages.innerHTML = "";
+
 		for (i=0; i<2; i++){
 
-		//puts cards into dealer array and populates graphics onto screen
-		dealerHand.push(myDeck.pop());
-		cardImage(dealerHand[i], dealerImages);
-		dealerdealt++
+			//puts cards into dealer array and populates graphics onto screen
+			dealerHand.push(myDeck.pop());
+			cardImage(dealerHand[i], dealerImages);
+			dealercount = dealercount + dealerHand[i].value;
+			if (dealerHand[i].name === 'A'){
+				dealeraces++
+			}
+			dealerdealt++
 
-		//puts cards into player array and populates graphics onto screen
-		playerHand.push(myDeck.pop());
-		cardImage(playerHand[i], playerImages);
-		playerdealt++
+			//puts cards into player array and populates graphics onto screen
+			playerHand.push(myDeck.pop());
+			cardImage(playerHand[i], playerImages);
+			playercount = playercount + playerHand[i].value;
+			if (playerHand[i].name === 'A'){
+				playeraces++
+			}
+			playerdealt++
 		}
-		
+
 		showCount();
 
 		dealButton.onclick = function(){
 			null;
 		}
+		playerTurn();
 	}	
 }
 
 function showCount(){
 
-	dealercount = 0;
-	playercount = 0;
+	dealerTotal.innerHTML = dealercount;
 
-	for(p=0;p<dealerHand.length;p++){
-		dealercount = dealercount + dealerHand[p].value;
-		dealerTotal.innerHTML = dealercount;
-	}
-
-	for(p=0;p<playerHand.length;p++){
-		playercount = playercount + playerHand[p].value;
-		playerTotal.innerHTML = playercount;
-	}
-
+	playerTotal.innerHTML = playercount;
 }
 
+
 function playerTurn(){
-		
-		var hit = document.getElementById('hit-button');	
-		var stay = document.getElementById('stay-button');
-		
-		hit.onclick = function(){
-			// console.log('working');
-			playerhit();
 
-			if (playercount === 21) {
-				console.log("win");
-				dealerTurn();
-				hit.onclick = function(){
-					null;
-				}
-				stay.onclick = function(){
-					null;
-				}
-			} 
+	if (playerHand.length === 2 && playercount === 21){
+		playerBlackjack();
+	}	
+		
+	hit.onclick = function(){
+		// console.log('working');
+		playerhit();
 
-			else if (playercount >21){
+		if (playercount === 21) {
+			console.log("player max");
+			dealerTurn();
+			hit.onclick = function(){
+				null;
+			}
+			stay.onclick = function(){
+				null;
+			}
+		} 
+
+		else if (playercount >21){
+			if (playeraces > 0) {
+				playercount = playercount - 10;
+				playeraces--;
+				showCount();
+			} else {
 				console.log('bust');
 				hit.onclick = function(){
 					null;
@@ -120,43 +143,49 @@ function playerTurn(){
 				stay.onclick = function(){
 					null;
 				}
-				dealerTurn();
+				playerBust();
 			}
-			}
+		}
+		}
 
+	stay.onclick = function(){
+		console.log('stay');
+		dealerTurn();
 		stay.onclick = function(){
-			console.log('stay');
-			dealerTurn();
-			stay.onclick = function(){
-					null;
-				}
-			hit.onclick = function(){
-					null;
-				}	
-		}	
-
-		
+				null;
+			}
+		hit.onclick = function(){
+				null;
+			}	
+	}			
 }
 
 function playerhit(){
 	playerHand.push(myDeck.pop());
 	cardImage(playerHand[playerdealt], playerImages);
+	playercount = playercount + playerHand[playerdealt].value;
+	if (playerHand[playerdealt].name === 'A'){
+		playeraces++
+	}
 	playerdealt++
 	showCount();
 }
 
 function dealerTurn(){
-	console.log("dealer");
-	if (playercount>21){
-		console.log("dealer auto wins");
-	}
-	else if (dealercount === 21){
+	// if (playercount>21){
+	// 	console.log("dealer auto wins");
+	// }
+	if (dealercount === 21){
 		console.log("dealer blackjack");
 	}
 	else if (dealercount < 17){
 		dealerHand.push(myDeck.pop());
 		cardImage(dealerHand[dealerdealt], dealerImages);
+		dealercount = dealercount + dealerHand[dealerdealt].value;
 		dealercount++
+		if (dealerHand[dealerdealt].name === 'A'){
+			dealeraces++
+		}
 		showCount();
 		setTimeout(function() {dealerTurn();}, 1000);
 	} 
@@ -164,15 +193,15 @@ function dealerTurn(){
 		console.log("see who wins!");
 	} 
 	else if (dealercount > 21){
-		console.log("bust");
+		if (dealeraces > 0) {
+				dealercount = dealercount - 10;
+				dealeraces--;
+				showCount();
+			} else {
+		console.log("dealer bust");
+	}
 	}
 }
-
-function playGame(){
-	dealCards();
-	playerTurn();
-}
-
 
 //generates graphics for the cards and attaches them to respective hands
 function cardImage(play, hand) {       
@@ -190,4 +219,15 @@ function cardImage(play, hand) {
     hand.appendChild(div);
 }
 
-playGame();
+function playerBust(){
+	console.log('dealer wins');
+	dealCards();
+}
+
+function playerBlackjack(){
+	console.log('player blackjack');
+}
+
+function playGame(){
+	dealCards();
+}
