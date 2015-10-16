@@ -21,6 +21,7 @@ var dealerHand = [];
 var playerHand = [];
 var myDeck = [];
 var wallet = 100;
+var bet = 0;
 
 //
 // Object related functions
@@ -78,6 +79,9 @@ function dealCards(){
 		dealerImages.innerHTML = "";
 
 		playerImages.innerHTML = "";
+
+		wallet = wallet - 5;
+		bet = bet + 5;
 
 		for (i=0; i<2; i++){
 
@@ -156,6 +160,18 @@ function playerTurn(){
 				playercount = playercount - 10;
 				playeraces--;
 				showCount();
+
+				if (playercount === 21) {
+					console.log("player max");
+					dealerTurn();
+					firstCard.removeAttribute('id');
+					hit.onclick = function(){
+						null;
+					}
+					stay.onclick = function(){
+						null;
+					}
+				}
 			} else {
 				console.log('bust');
 				hit.onclick = function(){
@@ -201,8 +217,8 @@ function playerhit(){
 //
 function dealerTurn(){
 	//checkes for dealer blackjack
-	if (dealerHand.length === 2 && dealercount === 21)){
-		console.log("dealer blackjack");
+	if (dealerHand.length === 2 && dealercount === 21){
+		dealerBlackjack();
 	}
 	// if dealer has less than 17, will draw cards until at 17 or greater
 	else if (dealercount < 17){
@@ -216,16 +232,19 @@ function dealerTurn(){
 		showCount();
 		setTimeout(function() {dealerTurn();}, 1000);
 	} 
+
 	else if (dealercount >= 17 && dealercount <= 20){
-		console.log("see who wins!");
+		checkForWin();
 	} 
+
 	else if (dealercount > 21){
 		if (dealeraces > 0) {
 				dealercount = dealercount - 10;
 				dealeraces--;
 				showCount();
+				setTimeout(function() {dealerTurn();}, 1000);
 			} else {
-		console.log("dealer bust");
+		dealerBust();
 	}
 	}
 }
@@ -250,10 +269,46 @@ function cardImage(play, hand) {
 //Win Conditions
 //
 function playerBust(){
-	console.log('dealer wins');
+	console.log('player bust');
 	dealCards();
+	bet = 0;
 }
 
 function playerBlackjack(){
-	console.log('player blackjack');
+	if (dealercount != 21){
+		bet * 3;
+		wallet = wallet + bet;
+		bet = 0;
+	} else {
+		wallet = wallet + bet;
+		bet = 0;
+	}
+	dealCards();
+}
+
+function checkForWin(){
+	if (dealercount > playercount){
+		bet = 0;
+		console.log('dealer greater');
+	} else if (playercount > dealercount){
+		bet * 2;
+		wallet = wallet + bet;
+		bet = 0;
+		console.log('player greater');
+	} else if (dealercount === playercount){
+		wallet = wallet + bet;
+		bet = 0;
+		console.log('push');
+	}
+	dealCards();
+}
+
+function dealerBlackjack(){
+	bet = 0;
+	dealCards();
+}
+
+function dealerBust(){
+	wallet = wallet + bet;
+	bet = 0;
 }
