@@ -1,5 +1,5 @@
 window.onload = function()	{
-	playGame();
+	dealCards();
 }
 
 //global variables
@@ -11,17 +11,20 @@ var playerTotal = document.getElementById('player-total');
 var dealerTotal = document.getElementById('dealer-total');
 var hit = document.getElementById('hit-button');	
 var stay = document.getElementById('stay-button');
-var playercount = 0;
-var playerdealt = 0;
-var dealercount = 0;
-var dealerdealt = 0;
-var playeraces = 0;
-var dealeraces = 0;
+var playercount = 0; //card total for the player
+var playerdealt = 0; // number of cards dealt for player in the game
+var dealercount = 0;// card total for the dealer
+var dealerdealt = 0; // number of cards dealt for the dealer
+var playeraces = 0; //number of aces recieved
+var dealeraces = 0; // number of aces received
 var dealerHand = [];
 var playerHand = [];
 var myDeck = [];
+var wallet = 100;
 
-
+//
+// Object related functions
+//
 // function to create card object
 function card(value, name, suit){
 	this.value = value;
@@ -44,6 +47,10 @@ function deck(){
     return cards;
 }
 
+//
+// Gameplay functions
+//
+
 //functions that shuffles an array
 function shuffle(deck) {
 	for(var j, x, i = deck.length; i; j = Math.floor(Math.random() * i), x = deck[--i], deck[i] = deck[j], deck[j] = x);
@@ -58,6 +65,7 @@ function dealCards(){
 
 		shuffle(myDeck);
 
+		//resets global variables for next hand
 		playercount = 0;
 		playerdealt = 0;
 		dealercount = 0;
@@ -92,6 +100,11 @@ function dealCards(){
 			playerdealt++
 		}
 
+		//sets first card of the dealers hand to black, to be revealed after players turn is over
+		var firstCard = document.querySelector('.card');
+		firstCard.setAttribute('id','firstCard');
+		console.log(firstCard);
+
 		showCount();
 
 		dealButton.onclick = function(){
@@ -101,6 +114,10 @@ function dealCards(){
 	}	
 }
 
+// function to display each players total
+//
+// Will revise function to take parameter
+//
 function showCount(){
 
 	dealerTotal.innerHTML = dealercount;
@@ -108,20 +125,23 @@ function showCount(){
 	playerTotal.innerHTML = playercount;
 }
 
-
+// function for player turn
 function playerTurn(){
 
+	//check if player has blackjack
 	if (playerHand.length === 2 && playercount === 21){
 		playerBlackjack();
 	}	
-		
+	
+	//activates hit button to deal another card to the player on click	
 	hit.onclick = function(){
-		// console.log('working');
 		playerhit();
 
+		//stops player drop drawing more cards if they have 21
 		if (playercount === 21) {
 			console.log("player max");
 			dealerTurn();
+			firstCard.removeAttribute('id');
 			hit.onclick = function(){
 				null;
 			}
@@ -130,6 +150,7 @@ function playerTurn(){
 			}
 		} 
 
+		// if player busts, checks to see if they have an ace, if not they bust
 		else if (playercount >21){
 			if (playeraces > 0) {
 				playercount = playercount - 10;
@@ -143,14 +164,17 @@ function playerTurn(){
 				stay.onclick = function(){
 					null;
 				}
+				firstCard.removeAttribute('id');
 				playerBust();
 			}
 		}
 		}
 
+	// stay button removes function from hit/stay and starts the dealers turn
 	stay.onclick = function(){
 		console.log('stay');
 		dealerTurn();
+		firstCard.removeAttribute('id');
 		stay.onclick = function(){
 				null;
 			}
@@ -160,6 +184,7 @@ function playerTurn(){
 	}			
 }
 
+//deals player an additional card
 function playerhit(){
 	playerHand.push(myDeck.pop());
 	cardImage(playerHand[playerdealt], playerImages);
@@ -171,13 +196,15 @@ function playerhit(){
 	showCount();
 }
 
+//
+// Dealers Turn
+//
 function dealerTurn(){
-	// if (playercount>21){
-	// 	console.log("dealer auto wins");
-	// }
-	if (dealercount === 21){
+	//checkes for dealer blackjack
+	if (dealerHand.length === 2 && dealercount === 21)){
 		console.log("dealer blackjack");
 	}
+	// if dealer has less than 17, will draw cards until at 17 or greater
 	else if (dealercount < 17){
 		dealerHand.push(myDeck.pop());
 		cardImage(dealerHand[dealerdealt], dealerImages);
@@ -219,6 +246,9 @@ function cardImage(play, hand) {
     hand.appendChild(div);
 }
 
+//
+//Win Conditions
+//
 function playerBust(){
 	console.log('dealer wins');
 	dealCards();
@@ -226,8 +256,4 @@ function playerBust(){
 
 function playerBlackjack(){
 	console.log('player blackjack');
-}
-
-function playGame(){
-	dealCards();
 }
