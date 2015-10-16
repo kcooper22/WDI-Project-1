@@ -2,6 +2,26 @@ body {
 	background-color: green
 }
 
+h1{
+	text-align: center;
+}
+
+#dealer-board{
+	display: block;
+	margin: 5 auto;
+	text-align: center;	
+	border : 3px solid black;
+	height: 35%;
+}
+
+#player-board{
+	display: block;
+	margin: 5 auto;
+	text-align: center;	
+	border : 3px solid black;
+	height: 40%;
+}
+
 .card{
     width:40px;
     height:60px;
@@ -11,9 +31,10 @@ body {
     margin-bottom:5px;
     border-radius:2px;
     font-family:courier;
-    cursor:pointer;
+  /*  cursor:pointer;*/
     background-color: white;
     display: inline-block;
+    color: black;
 }
 
 /*span.number, span.suit{
@@ -24,5 +45,10 @@ body {
 }*/
 
 #firstCard{
+	color: black;
 	background-color: #000;
+}
+
+.red{
+	color: red;
 }

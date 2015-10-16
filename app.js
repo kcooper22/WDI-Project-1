@@ -36,7 +36,7 @@ function card(value, name, suit){
 //function that builds a deck of 52 cards with values, names, and suits
 function deck(){
     this.names = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-    this.suits = ['Hearts','Diamonds','Spades','Clubs'];
+    this.suits = ['hearts','diams','spades','clubs'];
     this.cardValue = [11,2,3,4,5,6,7,8,9,10,10,10,10];
     var cards = [];
     
@@ -92,7 +92,7 @@ function dealCards(){
 			if (dealerHand[i].name === 'A'){
 				dealeraces++
 			}
-			dealerdealt++
+			dealerdealt++;
 
 			//puts cards into player array and populates graphics onto screen
 			playerHand.push(myDeck.pop());
@@ -101,12 +101,13 @@ function dealCards(){
 			if (playerHand[i].name === 'A'){
 				playeraces++
 			}
-			playerdealt++
+			playerdealt++;
 		}
 
 		//sets first card of the dealers hand to black, to be revealed after players turn is over
 		var firstCard = document.querySelector('.card');
 		firstCard.setAttribute('id','firstCard');
+		// firstCard.setAttribute('style','color:black');
 		console.log(firstCard);
 
 		showCount();
@@ -233,7 +234,7 @@ function dealerTurn(){
 		setTimeout(function() {dealerTurn();}, 1000);
 	} 
 
-	else if (dealercount >= 17 && dealercount <= 20){
+	else if (dealercount >= 17 && dealercount <= 21){
 		checkForWin();
 	} 
 
@@ -253,13 +254,13 @@ function dealerTurn(){
 function cardImage(play, hand) {       
 
 	div = document.createElement('div');
-    div.className = 'card'; 
-
-    if(play.suit == 'Diamonds'){
-        var ascii_char = '&diams;';
-    } else {
-        var ascii_char = '&' + play.suit.toLowerCase() + ';';
+    div.className = 'card';
+	
+    if (play.suit === 'diams' || play.suit === 'hearts'){
+    	div.className = div.className + ' red';
     }
+
+    var ascii_char = '&' + play.suit + ';';
 
     div.innerHTML = '<span class="number">' + play.name + '</span><span class="suit">' + ascii_char + '</span>';
     hand.appendChild(div);
@@ -311,4 +312,5 @@ function dealerBlackjack(){
 function dealerBust(){
 	wallet = wallet + bet;
 	bet = 0;
+	dealCards();
 }
