@@ -11,6 +11,7 @@ var playerTotal = document.getElementById('player-total');
 var dealerTotal = document.getElementById('dealer-total');
 var hit = document.getElementById('hit-button');	
 var stay = document.getElementById('stay-button');
+var playerWallet = document.getElementById('wallet');
 var playercount = 0; //card total for the player
 var playerdealt = 0; // number of cards dealt for player in the game
 var dealercount = 0;// card total for the dealer
@@ -60,6 +61,9 @@ function shuffle(deck) {
 
 // function to deal inital hands to the dealer and player
 function dealCards(){
+
+	updateWallet();
+
 	dealButton.onclick = function(){
 		//creates and shuffles a deck
 		myDeck = deck();
@@ -80,8 +84,12 @@ function dealCards(){
 
 		playerImages.innerHTML = "";
 
+		dealerTotal.innerHTML = '';		
+
 		wallet = wallet - 5;
 		bet = bet + 5;
+
+		updateWallet();
 
 		for (i=0; i<2; i++){
 
@@ -110,25 +118,38 @@ function dealCards(){
 		// firstCard.setAttribute('style','color:black');
 		console.log(firstCard);
 
-		showCount();
+		showPlayerCount();
 
 		dealButton.onclick = function(){
 			null;
 		}
 		playerTurn();
+	}
+
+	if (wallet === 0){
+		playerWallet.innerHTML = "Game Over";
+
+		dealButton.onclick = function(){
+			null;
+		}
 	}	
 }
 
-// function to display each players total
+// functions to display each players total
 //
-// Will revise function to take parameter
-//
-function showCount(){
-
-	dealerTotal.innerHTML = dealercount;
-
+function showPlayerCount(){
 	playerTotal.innerHTML = playercount;
 }
+
+function showDealerCount(){
+	dealerTotal.innerHTML = dealercount;
+}
+
+//function to show updated total in player wallet
+function updateWallet(){
+	playerWallet.innerHTML = "$" + wallet;
+}
+
 
 // function for player turn
 function playerTurn(){
@@ -160,7 +181,7 @@ function playerTurn(){
 			if (playeraces > 0) {
 				playercount = playercount - 10;
 				playeraces--;
-				showCount();
+				showPlayerCount();
 
 				if (playercount === 21) {
 					console.log("player max");
@@ -210,13 +231,15 @@ function playerhit(){
 		playeraces++
 	}
 	playerdealt++
-	showCount();
+	showPlayerCount();
 }
 
 //
 // Dealers Turn
 //
 function dealerTurn(){
+	showDealerCount();
+
 	//checkes for dealer blackjack
 	if (dealerHand.length === 2 && dealercount === 21){
 		dealerBlackjack();
@@ -230,7 +253,7 @@ function dealerTurn(){
 		if (dealerHand[dealerdealt].name === 'A'){
 			dealeraces++
 		}
-		showCount();
+		showDealerCount();
 		setTimeout(function() {dealerTurn();}, 1000);
 	} 
 
@@ -242,7 +265,7 @@ function dealerTurn(){
 		if (dealeraces > 0) {
 				dealercount = dealercount - 10;
 				dealeraces--;
-				showCount();
+				showDealerCount();
 				setTimeout(function() {dealerTurn();}, 1000);
 			} else {
 		dealerBust();
@@ -270,19 +293,26 @@ function cardImage(play, hand) {
 //Win Conditions
 //
 function playerBust(){
+	showDealerCount();
+	updateWallet();
 	console.log('player bust');
 	dealCards();
 	bet = 0;
 }
 
 function playerBlackjack(){
+	showDealerCount();
 	if (dealercount != 21){
-		bet * 3;
+		console.log('playerblackjack');
+		bet = bet * 3;
 		wallet = wallet + bet;
 		bet = 0;
+		updateWallet();
 	} else {
+		console.log('blackjack push');
 		wallet = wallet + bet;
 		bet = 0;
+		updateWallet();
 	}
 	dealCards();
 }
@@ -290,27 +320,34 @@ function playerBlackjack(){
 function checkForWin(){
 	if (dealercount > playercount){
 		bet = 0;
+		updateWallet();
 		console.log('dealer greater');
 	} else if (playercount > dealercount){
-		bet * 2;
+		bet = bet * 2;
 		wallet = wallet + bet;
 		bet = 0;
+		updateWallet();
 		console.log('player greater');
 	} else if (dealercount === playercount){
 		wallet = wallet + bet;
 		bet = 0;
+		updateWallet();
 		console.log('push');
 	}
 	dealCards();
 }
 
 function dealerBlackjack(){
+	console.log('dealer blackjack');
 	bet = 0;
+	updateWallet();
 	dealCards();
 }
 
 function dealerBust(){
+	bet = bet * 2;
 	wallet = wallet + bet;
 	bet = 0;
+	updateWallet();
 	dealCards();
 }

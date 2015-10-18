@@ -19,3 +19,12 @@ Steps required:
 			1. if player_total>dealer_total -> player wins
 			2. if player_total<dealer_total -> dealer wins
 			3. if player_total===dealer_total -> push, player bet returned
+
+
+To Do:
+
+- Fix player blackjack;
+Remove dealer score until dealer turn
+styling
+Add bet amounts to UI
+Add notifications to center of screen
