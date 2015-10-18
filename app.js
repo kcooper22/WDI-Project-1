@@ -302,6 +302,7 @@ function playerBust(){
 
 function playerBlackjack(){
 	showDealerCount();
+	firstCard.removeAttribute('id');
 	if (dealercount != 21){
 		console.log('playerblackjack');
 		bet = bet * 3;
